@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import datetime
+from dateutil import parser
 import unicodedata
 
 def format_currency(amount: Decimal) -> str:
@@ -10,5 +11,3 @@ def format_date(date_obj: datetime) -> str:
 
 def parse_date(date_str: str) -> datetime:
     return datetime.strptime(date_str, '%Y-%m-%d')
-
-

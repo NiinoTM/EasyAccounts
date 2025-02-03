@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 import unicodedata
-
+from dateutil import parser
 from datetime import datetime
 
 def validate_date(date_str, format="%d-%m-%Y"):
@@ -21,6 +21,16 @@ def validate_date(date_str, format="%d-%m-%Y"):
     except ValueError:
         return False
 
+
+def validate_and_convert_date(date_str):
+        try:
+            # Parse the input date string into a datetime object
+            date_obj = parser.parse(date_str, dayfirst=True)
+            # Convert the datetime object to the desired format (DD-MM-YYYY)
+            return date_obj.strftime('%d-%m-%Y')
+        except ValueError:
+            return None
+        
 def validate_amount(amount_str: str) -> bool:
     try:
         amount = Decimal(amount_str)

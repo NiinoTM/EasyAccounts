@@ -1,7 +1,7 @@
 # src/services/fiscal_period_service.py
 from datetime import datetime, timedelta
 from src.database.connection import Database
-from src.utils.validators import validate_date
+from src.utils.validators import validate_and_convert_date
 
 class FiscalPeriodService:
     def __init__(self):
@@ -11,69 +11,85 @@ class FiscalPeriodService:
     def cadastrar_periodo(self):
         print("\n=== Cadastrar Período de Exercício ===")
         
-        # Get initial date in DD-MM-YYYY format
+        # Get initial date in any format
         while True:
-            data_inicial = input("Data inicial (DD-MM-YYYY): ").strip()
-            if validate_date(data_inicial, format="%d-%m-%Y"):
+            data_inicial = input("Data inicial (qualquer formato com dia, mês e ano): ").strip()
+            formatted_date = validate_and_convert_date(data_inicial)
+            if formatted_date:
+                print(f"Data convertida: {formatted_date}")
                 break
-            print("Data inválida. Use o formato DD-MM-YYYY.")
+            print("Data inválida. Certifique-se de incluir dia, mês e ano.")
 
         # Get interval type
         print("\nTipo de intervalo:")
-        print("1. Mensal (30 dias)")
-        print("2. Trimestral (90 dias)")
-        print("3. Semestral (180 dias)")
-        print("4. Anual (365 dias)")
+        print("1. Mensal (1 mês)")
+        print("2. Trimestral (3 meses)")
+        print("3. Semestral (6 meses)")
+        print("4. Anual (12 meses)")
         print("5. Personalizado")
 
-        try:
-            opcao = int(input("\nEscolha uma opção: "))
-            if opcao == 5:
-                while True:
-                    try:
-                        intervalo = int(input("Digite o intervalo em dias: "))
-                        if intervalo > 0:
-                            break
-                        print("O intervalo deve ser maior que zero.")
-                    except ValueError:
-                        print("Por favor, digite um número válido.")
-            else:
-                intervalos = {1: 30, 2: 90, 3: 180, 4: 365}
-                intervalo = intervalos.get(opcao)
-                if not intervalo:
-                    print("Opção inválida!")
-                    return
+        while True:
+            try:
+                opcao = input("\nEscolha uma opção: ").strip()
+                opcao = int(opcao)  # Convert input to integer
+                if 1 <= opcao <= 5:  # Check if the option is within the valid range
+                    break
+                else:
+                    print("Opção inválida. Escolha um número entre 1 e 5.")
+            except ValueError:
+                print("Entrada inválida. Digite um número.")
 
-            # Calculate end date
-            data_inicial_obj = datetime.strptime(data_inicial, '%d-%m-%Y')
+        if opcao == 5:
+            while True:
+                try:
+                    intervalo = int(input("Digite o intervalo em dias: "))
+                    if intervalo > 0:
+                        break
+                    print("O intervalo deve ser maior que zero.")
+                except ValueError:
+                    print("Por favor, digite um número válido.")
+        else:
+            intervalos = {1: 1, 2: 3, 3: 6, 4: 12}
+            intervalo = intervalos.get(opcao)
+
+        # Calculate end date by adding months or years
+        data_inicial_obj = datetime.strptime(formatted_date, '%d-%m-%Y')
+        if opcao != 5:
+            # Calculate the new month and year
+            new_month = data_inicial_obj.month + intervalo
+            new_year = data_inicial_obj.year
+            if new_month > 12:
+                new_year += (new_month - 1) // 12
+                new_month = (new_month - 1) % 12 + 1
+            data_final_obj = data_inicial_obj.replace(year=new_year, month=new_month)
+        else:
+            # For custom interval, add days as before
             data_final_obj = data_inicial_obj + timedelta(days=intervalo)
-            data_final = data_final_obj.strftime('%d-%m-%Y')
 
-            # Show summary in DD-MM-YYYY format
-            print("\nResumo do período:")
-            print(f"Data inicial: {data_inicial}")
-            print(f"Data final: {data_final}")
-            print(f"Intervalo: {intervalo} dias")
+        data_final = data_final_obj.strftime('%d-%m-%Y')
 
-            confirma = input("\nConfirmar cadastro? (s/n): ").lower()
-            if confirma != 's':
-                print("Operação cancelada.")
-                return
+        # Show summary in DD-MM-YYYY format
+        print("\nResumo do período:")
+        print(f"Data inicial: {formatted_date}")
+        print(f"Data final: {data_final}")
+        print(f"Intervalo: {intervalo} {'meses' if opcao != 5 else 'dias'}")
 
-            # Save to database in YYYY-MM-DD format
-            sql = """
-            INSERT INTO fiscal_periods (start_date, end_date, interval_days)
-            VALUES (?, ?, ?)
-            """
-            self.db.execute(sql, (
-                data_inicial_obj.strftime('%Y-%m-%d'),
-                data_final_obj.strftime('%Y-%m-%d'),
-                intervalo
-            ))
-            print("\nPeríodo de exercício cadastrado com sucesso!")
+        confirma = input("\nConfirmar cadastro? (s/n): ").lower()
+        if confirma != 's':
+            print("Operação cancelada.")
+            return
 
-        except ValueError:
-            print("Entrada inválida. Digite um número.")
+        # Save to database in YYYY-MM-DD format
+        sql = """
+        INSERT INTO fiscal_periods (start_date, end_date, interval_days)
+        VALUES (?, ?, ?)
+        """
+        self.db.execute(sql, (
+            data_inicial_obj.strftime('%Y-%m-%d'),
+            data_final_obj.strftime('%Y-%m-%d'),
+            intervalo
+        ))
+        print("\nPeríodo de exercício cadastrado com sucesso!")
 
     def visualizar_periodos(self):
         print("\n=== Períodos de Exercício Cadastrados ===")
