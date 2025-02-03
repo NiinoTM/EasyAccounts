@@ -60,7 +60,7 @@ class AccountManager:
         """
         sql = """
         UPDATE accounts 
-        SET name = ?, type_id = ?, specific_subtype = ?
+        SET name = ?, type = ?, specific_subtype = ?
         WHERE id = ?
         """
         try:

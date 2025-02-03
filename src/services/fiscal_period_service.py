@@ -14,7 +14,7 @@ class FiscalPeriodService:
         # Get initial date in any format
         while True:
             data_inicial = input("Data inicial (qualquer formato com dia, mês e ano): ").strip()
-            formatted_date = validate_and_convert_date(data_inicial)
+            formatted_date = validate_and_convert_date(data_inicial, "%d-%m-%Y")
             if formatted_date:
                 print(f"Data convertida: {formatted_date}")
                 break
@@ -106,7 +106,7 @@ class FiscalPeriodService:
             return None
 
         print("\n{:<5} {:<12} {:<12} {:<15}".format(
-            "ID", "Início", "Fim", "Intervalo (dias)"
+            "ID", "Início", "Fim", "Intervalo (meses)"
         ))
         print("-" * 44)
 

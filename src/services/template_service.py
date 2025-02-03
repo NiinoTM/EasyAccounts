@@ -2,6 +2,7 @@ from src.database.connection import Database
 from src.core.templates import TransactionTemplate, TemplateTransaction
 from src.services.transaction_service import TransactionService
 from src.utils.search_utils import select_from_list
+from src.utils.formatters import convert_comma_to_float
 from src.utils.backup import create_backup
 from collections import namedtuple
 from datetime import datetime
@@ -182,7 +183,7 @@ class TemplateService:
             if modificar == 's':
                 while True:
                     try:
-                        novo_valor = float(input("Digite o novo valor: R$ "))
+                        novo_valor = convert_comma_to_float(input("Digite o novo valor: R$ "))
                         if novo_valor <= 0:
                             print("Erro: O valor deve ser maior que zero.")
                             continue

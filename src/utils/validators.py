@@ -22,14 +22,24 @@ def validate_date(date_str, format="%d-%m-%Y"):
         return False
 
 
-def validate_and_convert_date(date_str):
-        try:
-            # Parse the input date string into a datetime object
-            date_obj = parser.parse(date_str, dayfirst=True)
-            # Convert the datetime object to the desired format (DD-MM-YYYY)
-            return date_obj.strftime('%d-%m-%Y')
-        except ValueError:
-            return None
+def validate_and_convert_date(date_str, output_format="%d-%m-%Y"):
+    """
+    Validates and converts a date string into the specified output format.
+
+    Args:
+        date_str (str): The input date string in any recognizable format.
+        output_format (str): The desired output format (default is "%d-%m-%Y").
+
+    Returns:
+        str: The date in the specified output format, or None if the input is invalid.
+    """
+    try:
+        # Parse the input date string into a datetime object
+        date_obj = parser.parse(date_str, dayfirst=True)
+        # Convert the datetime object to the desired output format
+        return date_obj.strftime(output_format)
+    except ValueError:
+        return None
         
 def validate_amount(amount_str: str) -> bool:
     try:

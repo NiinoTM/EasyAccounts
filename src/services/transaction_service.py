@@ -3,8 +3,8 @@ from decimal import Decimal
 from src.database.connection import Database
 from src.core.transactions import TransactionManager
 from src.database.models import Transaction
-from src.utils.validators import validate_date, validate_amount
-from src.utils.formatters import format_currency, format_date
+from src.utils.validators import validate_date, validate_amount, validate_and_convert_date
+from src.utils.formatters import format_currency, format_date, convert_comma_to_float
 from typing import List, Optional
 from src.utils.backup import create_backup
 from src.utils.search_utils import select_from_list
@@ -57,10 +57,14 @@ class TransactionService:
     def nova_transacao(self):
         print("\n--- Nova Transação ---")
         
-        # Data
-        data = input("Data (YYYY-MM-DD) [hoje]: ").strip()
-        if not data:
-            data = datetime.now().strftime("%Y-%m-%d")
+        # Get initial date in any format
+        while True:
+            data = input("Data da Transação (qualquer formato com dia, mês e ano): ").strip()
+            data = validate_and_convert_date(data, "%Y-%m-%d")
+            if data:
+                print(f"Data convertida: {data}")
+                break
+            print("Data inválida. Certifique-se de incluir dia, mês e ano.")
             
         # Descrição
         descricao = input("Descrição: ")
@@ -82,7 +86,7 @@ class TransactionService:
         
         # Valor
         try:
-            valor = float(input("Valor: R$ "))
+            valor = convert_comma_to_float((input("Valor: R$ ")))
             if valor <= 0:
                 print("Erro: O valor deve ser maior que zero.")
                 return
