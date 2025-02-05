@@ -75,7 +75,7 @@ class TemplateService:
             # Pegar descrição e valor
             descricao = input("Descrição da transação: ")
             try:
-                valor = float(input("Valor: R$ "))
+                valor = convert_comma_to_float(input("Valor: R$ "))
                 if valor <= 0:
                     print("Erro: O valor deve ser maior que zero.")
                     continue

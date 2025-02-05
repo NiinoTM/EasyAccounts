@@ -36,7 +36,8 @@ class MainMenu:
             {"label": "Transações", "action": "transacoes"},
             {"label": "Modelos", "action": "modelos"},
             {"label": "Relatórios", "action": "relatorios"},
-            {"label": "Backup/Importação", "action": "backup_importacao"},  # Nova opção
+            {"label": "Contas a Pagar e a Receber", "action": "contas_pagar_receber"},
+            {"label": "Backup/Importação", "action": "backup_importacao"},
             {"label": "Sair", "action": "sair"}
         ]
         self.draw_menu(menu_items)
@@ -127,6 +128,17 @@ class MainMenu:
         self.draw_menu(menu_items, "Relatórios")
         return menu_items
         
+    def contas_pagar_receber_menu(self):
+        menu_items = [
+            {"label": "Cadastrar nova conta (pagar ou receber)", "action": "cadastrar_conta_pagar_receber"},
+            {"label": "Listar contas pendentes", "action": "listar_contas_pendentes"},
+            {"label": "Filtrar por vencimento", "action": "filtrar_contas_vencimento"},
+            {"label": "Atualizar status (pago/recebido, renegociado, cancelado)", "action": "atualizar_status_conta"},
+            {"label": "Gerar relatório de fluxo de caixa futuro", "action": "gerar_relatorio_fluxo_caixa"},
+            {"label": "Voltar", "action": "main"}
+        ]
+        self.draw_menu(menu_items, "Contas a Pagar e a Receber")
+        return menu_items
     
 
     def run(self):
@@ -147,6 +159,8 @@ class MainMenu:
                 menu_items = self.template_menu()
             elif self.current_menu == 'relatorios':
                 menu_items = self.relatorios_menu()
+            elif self.current_menu == 'contas_pagar_receber':
+                menu_items = self.contas_pagar_receber_menu()
             elif self.current_menu == 'backup_importacao':  # Novo menu
                 menu_items = self.backup_importacao_menu()
             else:
