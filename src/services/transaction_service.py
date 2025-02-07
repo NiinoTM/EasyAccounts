@@ -134,7 +134,7 @@ class TransactionService:
         FROM transactions t
         JOIN accounts d ON t.debit_account = d.id
         JOIN accounts c ON t.credit_account = c.id
-        ORDER BY t.date DESC, t.id DESC
+        ORDER BY t.date ASC, t.id ASC
         """
         transacoes = self.db.execute(sql).fetchall()
 

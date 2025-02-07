@@ -107,11 +107,11 @@ class BalanceSheetService:
         ativos_circulantes, ativos_fixos, passivos_circulantes, passivos_nao_circulantes, patrimonio = self.balance_sheet.calcular_saldos_na_data(data)
         
         # Debug: Print the data being passed
-        print("Ativos Circulantes:", ativos_circulantes)
-        print("Ativos Fixos:", ativos_fixos)
-        print("Passivos Circulantes:", passivos_circulantes)
-        print("Passivos Não Circulantes:", passivos_nao_circulantes)
-        print("Patrimônio:", patrimonio)
+        # print("Ativos Circulantes:", ativos_circulantes)
+        # print("Ativos Fixos:", ativos_fixos)
+        # print("Passivos Circulantes:", passivos_circulantes)
+        # print("Passivos Não Circulantes:", passivos_nao_circulantes)
+        # print("Patrimônio:", patrimonio)
         
         self.exibir_balanco_patrimonial(ativos_circulantes, ativos_fixos, passivos_circulantes, passivos_nao_circulantes, patrimonio, lucro_drp)
 

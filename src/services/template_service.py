@@ -109,7 +109,7 @@ class TemplateService:
         """Lista todos os modelos disponíveis"""
         print("\n=== Modelos de Transações Disponíveis ===")
         
-        sql = "SELECT id, name, details FROM transaction_templates ORDER BY name"
+        sql = "SELECT id, name, details FROM transaction_templates ORDER BY ID"
         modelos = self.db.execute(sql).fetchall()
         
         if not modelos:
