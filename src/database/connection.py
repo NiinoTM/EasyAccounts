@@ -71,6 +71,30 @@ class Database:
             end_date TEXT NOT NULL,
             interval_days INTEGER NOT NULL
         );"""
+
+        sql_depreciation_methods = """
+    CREATE TABLE IF NOT EXISTS depreciation_methods (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        annual_rate REAL
+    );"""
+
+        sql_assets = """
+        CREATE TABLE IF NOT EXISTS assets (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            acquisition_date TEXT NOT NULL,
+            acquisition_value REAL NOT NULL,
+            depreciation_method_id INTEGER,
+            useful_life_years INTEGER,
+            salvage_value REAL,
+            start_depreciation_date TEXT NOT NULL,
+            account_id INTEGER,
+            is_active BOOLEAN DEFAULT 1,
+            FOREIGN KEY (depreciation_method_id) REFERENCES depreciation_methods(id),
+            FOREIGN KEY (account_id) REFERENCES accounts(id)
+        );"""
         
         self.execute(sql_account_categories)
         self.execute(sql_account_types)
@@ -78,6 +102,8 @@ class Database:
         self.execute(sql_transactions)
         self.execute(sql_templates)
         self.execute(sql_fiscal_periods)
+        self.execute(sql_depreciation_methods)
+        self.execute(sql_assets)
     
     def prepopulate_account_types(self):
         predefined_types = [

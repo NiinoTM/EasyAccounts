@@ -7,6 +7,7 @@ from src.services.fiscal_period_service import FiscalPeriodService
 from src.services.report_service import ReportService
 from src.services.drp_service import DRPService
 from src.utils.backup import import_from_backup, get_backup_files
+from src.services.depreciation_service import DepreciationService
 import os
 
 
@@ -21,6 +22,7 @@ class MainMenu:
         self.fiscal_period_service = FiscalPeriodService()
         self.drp_service = DRPService()  # Inicialize o DRPService
         self.report_service = ReportService(self.db, self.drp_service)  # Passe o drp_service
+        self.depreciation_service = DepreciationService()
 
     def draw_menu(self, items, title=None):
         print("\n" + "=" * 30)
@@ -37,6 +39,7 @@ class MainMenu:
             {"label": "Modelos", "action": "modelos"},
             {"label": "Relatórios", "action": "relatorios"},
             {"label": "Contas a Pagar e a Receber", "action": "contas_pagar_receber"},
+            {"label": "Ativos com Depreciação", "action": "ativos_depreciacao"},
             {"label": "Backup/Importação", "action": "backup_importacao"},
             {"label": "Sair", "action": "sair"}
         ]
@@ -140,6 +143,18 @@ class MainMenu:
         self.draw_menu(menu_items, "Contas a Pagar e a Receber")
         return menu_items
     
+    def ativos_depreciacao_menu(self):
+        menu_items = [
+            {"label": "Cadastrar Ativo", "action": "cadastrar_ativo"},
+            {"label": "Visualizar Ativos", "action": "visualizar_ativos"},
+            {"label": "Calcular Depreciação", "action": "calcular_depreciacao"},
+            {"label": "Voltar", "action": "main"}
+        ]
+        self.draw_menu(menu_items, "Ativos com Depreciação")
+        return menu_items
+        
+
+# In menu.py, modify the run method to handle depreciation menu actions:
 
     def run(self):
         while True:
@@ -161,7 +176,9 @@ class MainMenu:
                 menu_items = self.relatorios_menu()
             elif self.current_menu == 'contas_pagar_receber':
                 menu_items = self.contas_pagar_receber_menu()
-            elif self.current_menu == 'backup_importacao':  # Novo menu
+            elif self.current_menu == 'ativos_depreciacao':  # Add this condition
+                menu_items = self.ativos_depreciacao_menu()
+            elif self.current_menu == 'backup_importacao':
                 menu_items = self.backup_importacao_menu()
             else:
                 print("Menu inválido.")
@@ -176,15 +193,19 @@ class MainMenu:
                         print("Saindo...")
                         break
                     elif action in ["main", "cadastros", "categorias", 
-                                    "contas", "transacoes", "modelos", 
-                                    "periodo_exercicio", "relatorios", 
-                                    "backup_importacao"]:
+                                "contas", "transacoes", "modelos", 
+                                "periodo_exercicio", "relatorios",
+                                "ativos_depreciacao",  # Add this
+                                "backup_importacao"]:
                         self.current_menu = action
                     elif action == "balanco_patrimonial":
-                        # Pass the fiscal_period_service argument
                         self.report_service.balanco_patrimonial(self.fiscal_period_service)
                     elif action == "importar_backup":
                         self.importar_backup()
+                    # Add specific handling for depreciation actions
+                    elif action in ["cadastrar_ativo", "visualizar_ativos", "calcular_depreciacao"]:
+                        method = getattr(self.depreciation_service, action)
+                        method()
                     else:
                         if hasattr(self.account_service, action):
                             getattr(self.account_service, action)()

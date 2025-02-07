@@ -49,30 +49,39 @@ class FiscalPeriodService:
                 except ValueError:
                     print("Por favor, digite um número válido.")
         else:
+            # Define intervals: option 1 means 1 month, option 2 means 3 months, etc.
             intervalos = {1: 1, 2: 3, 3: 6, 4: 12}
             intervalo = intervalos.get(opcao)
 
-        # Calculate end date by adding months or years
-        data_inicial_obj = datetime.strptime(formatted_date, '%d-%m-%Y')
-        if opcao != 5:
-            # Calculate the new month and year
-            new_month = data_inicial_obj.month + intervalo
-            new_year = data_inicial_obj.year
-            if new_month > 12:
-                new_year += (new_month - 1) // 12
-                new_month = (new_month - 1) % 12 + 1
-            data_final_obj = data_inicial_obj.replace(year=new_year, month=new_month)
-        else:
-            # For custom interval, add days as before
-            data_final_obj = data_inicial_obj + timedelta(days=intervalo)
+            # Convert the start date from string to a date object
+            data_inicial_obj = datetime.strptime(formatted_date, '%d-%m-%Y')
 
-        data_final = data_final_obj.strftime('%d-%m-%Y')
+            if opcao != 5:
+                # For monthly intervals: calculate the new month and year
+                new_month = data_inicial_obj.month + intervalo
+                new_year = data_inicial_obj.year
+                if new_month > 12:
+                    # Adjust the year and month if the new month is greater than 12
+                    new_year += (new_month - 1) // 12
+                    new_month = (new_month - 1) % 12 + 1
+                # Create a new date using the new year and month while keeping the same day
+                data_final_obj = data_inicial_obj.replace(year=new_year, month=new_month)
+            else:
+                # For a custom interval option: add the number of days indicated by 'intervalo'
+                data_final_obj = data_inicial_obj + timedelta(days=intervalo)
 
-        # Show summary in DD-MM-YYYY format
-        print("\nResumo do período:")
-        print(f"Data inicial: {formatted_date}")
-        print(f"Data final: {data_final}")
-        print(f"Intervalo: {intervalo} {'meses' if opcao != 5 else 'dias'}")
+            # Subtract one day from the final date to adjust the period
+            data_final_obj = data_final_obj - timedelta(days=1)
+
+            # Format the final date in DD-MM-YYYY format
+            data_final = data_final_obj.strftime('%d-%m-%Y')
+
+            # Show summary in DD-MM-YYYY format
+            print("\nResumo do período:")
+            print("Data inicial:", formatted_date)
+            print("Data final:", data_final)
+            print("Intervalo:", intervalo, "meses" if opcao != 5 else "dias")
+
 
         confirma = input("\nConfirmar cadastro? (s/n): ").lower()
         if confirma != 's':

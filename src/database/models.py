@@ -46,3 +46,23 @@ class AccountCategory:
     id: Optional[int]
     name: str
     description: Optional[str] = None
+
+@dataclass
+class DepreciationMethod:
+    id: Optional[int]
+    name: str
+    description: str
+    annual_rate: float
+
+@dataclass
+class Asset:
+    id: Optional[int]
+    name: str
+    acquisition_date: date
+    acquisition_value: Decimal
+    depreciation_method_id: int
+    useful_life_years: int
+    salvage_value: Decimal
+    start_depreciation_date: date
+    account_id: int  # Link to the account where this asset is registered
+    is_active: bool = True
